@@ -4,15 +4,24 @@
 
 {% block page_content %}    
     {% if book_list %}
+    
     <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <ul class="list-group">
-                    {% for book in book_list%}
-                        <a href="/book/{{ book.book_id }}"><li class="list-group-item list-group-item-action">{{ book.book_name }}</li></a>
-                    {% endfor %}
-                </ul>                
-            </div>
+        <div class="row row-cols-1 row-cols-xs-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">  
+            <ul class="list-group">
+                {% for book in book_list%}
+                    <a href="/book/{{ book.book_id }}">
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{ url_for('static', filename = book.img_path) }}" class="card-img-top" alt="책 이미지">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ book.book_name }} title</h5>
+                                <li class="list-group-item list-group-item-action">{{ book.book_stars }}</li>
+                                <li class="list-group-item list-group-item-action">{{ book.book_counts }}</li>
+                                <a href="#" class="btn btn-primary">대여 하기</a>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </ul>                
         </div>
     </div>
     

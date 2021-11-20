@@ -71,16 +71,21 @@ def login():
 
             flash(f"{user_data.user_name}님, 환영합니다!")
             return redirect(url_for('main.home'))
+            
+# @bp.route('/status')
+# def status():
+
 
 @bp.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('main.home'))
 
-@bp.route('/info')
+@bp.route('/check_info')
 def info():
-    return redirect(url_for('info.html'))
+    print("hello")
+    return render_template('check_info.html')
 
-@bp.route('/out')
+@bp.route('/check_out')
 def out():
-    return redirect(url_for('out.html'))
+    return render_template('check_out.html')

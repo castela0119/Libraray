@@ -20,6 +20,9 @@ class lib_books(db.Model):
     isbn                = db.Column(db.Integer, nullable=False)
     description         = db.Column(db.String(255),)
     img_path            = db.Column(db.String(255),)
+    book_counts         = db.Column(db.Integer,)
+    book_stars          = db.Column(db.Integer,)
+    book_reviews        = db.Column(db.String(255),)
 
 class lib_status(db.Model):
 
