@@ -11,30 +11,32 @@ class lib_books(db.Model):
 
     __tablename__ = 'lib_books'
 
-    field1              = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True),
-    book_name           = db.Column(db.String(30), nullable=False),
-    publisher           = db.Column(db.String(50)),
-    author              = db.Column(db.String(30)),
-    publication_date    = db.Column(db.Integer),
-    pages               = db.Column(db.Integer),
-    isbn                = db.Column(db.Integer, db.ForeignKey('lib_status.isbn'), nullable=False),
-    description         = db.Column(db.String(255))
+    book_id             = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True,)
+    book_name           = db.Column(db.String(30), nullable=False)
+    publisher           = db.Column(db.String(50),)
+    author              = db.Column(db.String(30),)
+    publication_date    = db.Column(db.Integer,)
+    pages               = db.Column(db.Integer,)
+    isbn                = db.Column(db.Integer, nullable=False)
+    description         = db.Column(db.String(255),)
+    img_path            = db.Column(db.String(255),)
 
 class lib_status(db.Model):
 
     __tablename__ = 'lib_status'
 
-    user_no             = db.Column(db.Integer, db.ForeignKey('lib_users.id'), nullable=False),
-    isbn                = db.Column(db.Integer, db.ForeignKey('lib_books.isbn'), nullable=False),
-    book_name           = db.Column(db.String(30), db.ForeignKey('lib_books.book_name'), nullable=False),
-    book_start          = db.Column(db.Integer),
-    book_end            = db.Column(db.Integer)
+    status_no           = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True,)
+    book_id             = db.Column(db.Integer, db.ForeignKey('lib_books.book_id'), nullable=False,)
+    user_no             = db.Column(db.Integer, db.ForeignKey('lib_users.user_no'), nullable=False,)
+    book_name           = db.Column(db.String(30), db.ForeignKey('lib_books.book_name'), nullable=False,)
+    book_start          = db.Column(db.Integer,)
+    book_end            = db.Column(db.Integer,)
 
 class lib_users(db.Model):
 
     __tablename__ = 'lib_users'
 
-    user_no             = db.Column(db.Integer, db.ForeignKey('lib_status.id'), nullable=False),
-    user_name           = db.Column(db.Text(), nullable=False),
-    user_phone          = db.Column(db.Integer),
-    user_email          = db.Column(db.Text())
+    user_no             = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True,)
+    user_email          = db.Column(db.String(40), nullable=False)
+    user_pw             = db.Column(db.Integer, nullable=False)
+    user_name           = db.Column(db.String(40), nullable=False)

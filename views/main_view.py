@@ -19,7 +19,8 @@ bp = Blueprint('main', __name__, url_prefix='/')
 
 @bp.route('/')
 def home():
-    return render_template('main.html')
+    book_list = lib_books.query.order_by(lib_books.book_id.asc())
+    return render_template('main.html', book_list=book_list)
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
@@ -29,11 +30,11 @@ def register():
     elif request.method == 'POST':
         # 회원가입 과정을 거쳐야겠다!
         # 만약에 같은 아이디가 있으면 어떡해?
-        user = lib_users.query.filter_by(id=request.form['user_id']).first()
+        user = lib_users.query.filter_by(user_email=request.form['user_email']).first()
         if not user:
-            password = generate_password_hash(request.form['user_pw'])
+            user_pw = generate_password_hash(request.form['user_pw'])
 
-            user = lib_users(id=request.form['user_id'], password=password, telephone=request.form['user_phone'])
+            user = lib_users(user_email=request.form['user_email'], user_pw=user_pw, user_name=request.form['user_name'])
         
             db.session.add(user)
             db.session.commit()
@@ -43,3 +44,43 @@ def register():
         else:
             flash("이미 가입된 아이디입니다.")
             return redirect(url_for('main.register'))
+
+@bp.route('/login', methods=('GET', 'POST'))
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    elif request.method == 'POST':
+        user_email = request.form['user_email']
+        user_pw    = request.form['user_pw']
+
+        user_data = lib_users.query.filter_by(user_email=user_email).first()
+
+        if not user_data:
+            flash("없는 아이디입니다.")
+            return redirect(url_for('main.login'))
+
+        elif not check_password_hash(user_data.user_pw, user_pw):
+            flash("비밀번호가 틀렸습니다.")
+            return redirect(url_for('main.login'))
+
+        else:
+            session.clear()
+            session['user_email']   = user_email
+            session['user_name']    = user_data.user_name
+
+            flash(f"{user_data.user_name}님, 환영합니다!")
+            return redirect(url_for('main.home'))
+
+@bp.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('main.home'))
+
+@bp.route('/info')
+def info():
+    return redirect(url_for('info.html'))
+
+@bp.route('/out')
+def out():
+    return redirect(url_for('out.html'))
