@@ -30,7 +30,7 @@ class lib_status(db.Model):
 
     status_no           = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True,)
     book_id             = db.Column(db.Integer, db.ForeignKey('lib_books.book_id'), nullable=False,)
-    user_no             = db.Column(db.Integer, db.ForeignKey('lib_users.user_no'), nullable=False,)
+    user_email          = db.Column(db.String(40), db.ForeignKey('lib_users.user_email'), nullable=False,)
     book_name           = db.Column(db.String(30), db.ForeignKey('lib_books.book_name'), nullable=False,)
     book_start          = db.Column(db.Integer,)
     book_end            = db.Column(db.Integer,)

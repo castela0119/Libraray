@@ -20,7 +20,9 @@ bp = Blueprint('main', __name__, url_prefix='/')
 @bp.route('/')
 def home():
     book_list = lib_books.query.order_by(lib_books.book_id.asc())
-    return render_template('main.html', book_list=book_list)
+    status_info = lib_status.query.filter_by(book_id=lib_status.book_id).first()
+
+    return render_template('main.html', book_list=book_list, status_info=status_info)
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
@@ -89,3 +91,16 @@ def info():
 @bp.route('/check_out')
 def out():
     return render_template('check_out.html')
+
+# @bp.route('/rent/<int:user_email>', methods=('POST', ))
+# def book_rental(user_email):
+#     status_info = lib_status.query.filter_by(user_email=user_email).first()
+
+#     if(status_info.book_counts > 0):
+#         book_counts = status_info.book_counts - 1
+
+#     db.session.add(status_info)
+#     db.session.commit()
+
+#     flash("대여가 완료되었습니다.")
+#     return redirect(url_for('main.home'), book_id=status_info.book_id, user_email = status_info.user_email, book_counts = book_counts, book_start = status_info.book_start, book_end = status_info.book_end)

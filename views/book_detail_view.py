@@ -13,6 +13,7 @@ def book_detail(book_id):
 
     book_info = lib_books.query.filter_by(book_id=book_id).first()
     review_info = lib_reviews.query.filter_by(book_id=book_id).all()
+    status_info = lib_status.query.filter_by(book_id=book_id).first()
 
     # 만약 book_info 에 없는 책을 주소창에 입력했을 경우
 
@@ -21,12 +22,13 @@ def book_detail(book_id):
         return redirect(url_for('main.home'))
 
     rating_sum, average = 0, 0
+
     if review_info:
         for review in review_info:
             rating_sum += review.rating
         average = rating_sum / len(review_info)
 
-    return render_template("book_detail.html", avg=average, book_info=book_info, review_info=review_info)
+    return render_template("book_detail.html", avg=average, book_info=book_info, review_info=review_info, status_info=status_info)
 
 # 리뷰를 써야하니깐, 리뷰를 작성할 수 있는 POST 를 받는 것을 만들어야 함.
 @bp.route('/write_review/<int:book_id>', methods=('POST', ))
@@ -53,12 +55,14 @@ def create_review(book_id):
 
 # 리뷰를 삭제할 수도 있음 -> 삭제 요청을 받는 걸 만들어야 함.
 @bp.route('/delete_review/<int:book_id>')
-def delete_review(review_id):
+def delete_review(book_id):
+    review_id = request.args.get('review_id') # flask get 파라미터
+
     if 'user_email' not in session:
         flash("권한이 없습니다.")
         return redirect(url_for('main.home'))
 
-    user_info = lib_users.query.filter_by(user_email=session['user_email']).first()
+    user_info   = lib_users.query.filter_by(user_email=session['user_email']).first()
     review_info = lib_reviews.query.filter_by(review_id=review_id).first()
     
     if not review_info:

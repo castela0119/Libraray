@@ -15,12 +15,17 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ book.book_name }} title</h5>
                                 <li class="list-group-item list-group-item-action">{{ book.book_stars }}</li>
-                                <li class="list-group-item list-group-item-action">{{ book.book_counts }}</li>
-                                <a href="#" class="btn btn-primary">대여 하기</a>
+                                <li class="list-group-item list-group-item-action">{{ book.book_counts }} 권 / 5 권</li>
                             </div>
                         </div>
                     </a>
-                {% endfor %}
+                    
+                    <form action="{{ url_for('main.home', book_counts=status_info.book_counts) }}" method="post">
+                        <div class="form-group">
+                            <input class="btn btn-primary" type="submit" value="대여하기">
+                        </div>
+                    </form>
+                {% endfor %}        
             </ul>                
         </div>
     </div>
