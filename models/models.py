@@ -43,3 +43,13 @@ class lib_users(db.Model):
     user_email          = db.Column(db.String(40), nullable=False)
     user_pw             = db.Column(db.Integer, nullable=False)
     user_name           = db.Column(db.String(40), nullable=False)
+
+class lib_reviews(db.Model):
+
+    __tablename__ = 'lib_reviews'
+
+    review_id           = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True,)
+    user_email          = db.Column(db.String(40), db.ForeignKey('lib_users.user_email'), nullable=False)
+    book_id             = db.Column(db.Integer, db.ForeignKey('lib_books.book_id'), nullable=False)
+    rating              = db.Column(db.Float, nullable=False)
+    content             = db.Column(db.Text())
