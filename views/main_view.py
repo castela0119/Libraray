@@ -83,12 +83,17 @@ def out():
 def rent(book_id):
     book_info = lib_books.query.filter_by(book_id=book_id).first()
 
+    if(book_info.book_counts == 0):
+        flash(f"[{book_info.book_name}] 은 모두 대여된 상태입니다.")
+        
     if(book_info.book_counts > 0):
         book_info.book_counts = book_info.book_counts - 1
+        flash(f"[{book_info.book_name}] 이 대여 되었습니다.")
+        
 
     db.session.commit()
 
-    flash("대여가 완료되었습니다.")
+    
     return redirect(url_for('main.home'),)
 
 
