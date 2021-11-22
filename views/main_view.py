@@ -1,16 +1,3 @@
-'''
-view는 우리 눈에 보이는 부분을 관리합니다.
-
-지난 시간에 작업했을 때는 view를 여러 파일로 분리하지 않았는데, 상황에 따라 파일을 분리할 수 있습니다.
-그러면 어떻게 관리하냐고요?
-
-어차피 각 파일마다 별도의 Blueprint를 만들테니, __init__.py에서 전부 import 하고
-각각 다 register_blueprint를 활용해서 이어줍니다.
-
-추가로, 코드를 보다보면 query를 사용한 것이 많은데, 이를 활용하면 SQL 구문을 직접 사용하지 않고
-ORM을 통해 간접적으로 db에 작업 명령을 내릴 수 있습니다.
-'''
-
 from flask import Blueprint, render_template, request, url_for, session, redirect, flash
 from models.models import *
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -92,15 +79,30 @@ def info():
 def out():
     return render_template('check_out.html')
 
-# @bp.route('/rent/<int:user_email>', methods=('POST', ))
-# def book_rental(user_email):
-#     status_info = lib_status.query.filter_by(user_email=user_email).first()
+@bp.route('/rent/<int:book_id>', methods=('POST', ))
+def rent(book_id):
+    book_info = lib_books.query.filter_by(book_id=book_id).first()
 
-#     if(status_info.book_counts > 0):
-#         book_counts = status_info.book_counts - 1
+    if(book_info.book_counts > 0):
+        book_counts = book_info.book_counts - 1
 
-#     db.session.add(status_info)
+    db.session.add(book_info)
+    db.session.commit()
+
+    flash("대여가 완료되었습니다.")
+    return redirect(url_for('main.home'), book_id=book_info.book_id, book_counts = book_counts)
+
+
+# @bp.route('/rent/<int:book_id>', methods=('POST', ))
+# def rent(book_id):
+#     book_info = lib_books.query.filter_by(book_id=book_id).first()
+
+#     if(book_info.book_counts > 0):
+#         book_counts = book_info.book_counts - 1
+#         book = lib_books(book_counts=book_counts)
+
+#     db.session.add(book)
 #     db.session.commit()
 
 #     flash("대여가 완료되었습니다.")
-#     return redirect(url_for('main.home'), book_id=status_info.book_id, user_email = status_info.user_email, book_counts = book_counts, book_start = status_info.book_start, book_end = status_info.book_end)
+#     return redirect(url_for('main.home'), book_counts=book_counts)
