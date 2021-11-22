@@ -84,13 +84,12 @@ def rent(book_id):
     book_info = lib_books.query.filter_by(book_id=book_id).first()
 
     if(book_info.book_counts > 0):
-        book_counts = book_info.book_counts - 1
+        book_info.book_counts = book_info.book_counts - 1
 
-    db.session.add(book_info)
     db.session.commit()
 
     flash("대여가 완료되었습니다.")
-    return redirect(url_for('main.home'), book_id=book_info.book_id, book_counts = book_counts)
+    return redirect(url_for('main.home'),)
 
 
 # @bp.route('/rent/<int:book_id>', methods=('POST', ))

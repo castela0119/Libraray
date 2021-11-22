@@ -20,7 +20,7 @@
                         </div>
                     </a>
                     
-                    <form action="{{ url_for('main.home', book_counts=book.book_counts) }}" method="post">
+                    <form action="{{ url_for('main.rent', book_id=book.book_id) }}" method="post">
                         <div class="form-group">
                             <input class="btn btn-primary" type="submit" value="대여하기">
                         </div>
