@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}대여 확인 및 반납 페이지{% endblock %}
+"현재 대여된 책 페이지 및 반납할 수 있는 페이지"
+
+{% block page_content %}    
+    {% if book_list %}
+    
+    <div class="container">
+        <div class="row row-cols-1 row-cols-xs-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">  
+            <ul class="list-group">
+                {% for book in book_list%}
+                    <div class="card" style="width: 18rem;">
+                        <img src="{{ url_for('static', filename = book.img_path) }}" class="card-img-top" alt="책 이미지">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ book.book_name }} title</h5>
+                            <li class="list-group-item list-group-item-action">{{ book.book_stars }}</li>
+                            <li class="list-group-item list-group-item-action">{{ book.book_stars }}</li>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                {% for status in status_info %}
+                    <li class="list-group-item list-group-item-action">{{ status.book_start }}</li>
+                    <form action="{{ url_for('status._return', book_id=book.book_id) }}" method="post">
+                        <div class="form-group">
+                            <input class="btn btn-primary" type="submit" value="반납하기">
+                        </div>
+                    </form>
+                {% endfor %}
+            </ul>                
+        </div>
+    </div>
+    
+    {% else %}
+    <p>책이 없어요...</p>
+    {% endif %}
+
+
+{% endblock %}

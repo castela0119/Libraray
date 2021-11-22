@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, session, redirect, flash
 from models.models import *
 from werkzeug.security import generate_password_hash, check_password_hash
+import sqlite3 as sql
 
 bp = Blueprint('main', __name__, url_prefix='/')
 
@@ -70,18 +71,12 @@ def logout():
     session.clear()
     return redirect(url_for('main.home'))
 
-@bp.route('/check_info')
-def info():
-    print("hello")
-    return render_template('check_info.html')
-
-@bp.route('/check_out')
-def out():
-    return render_template('check_out.html')
 
 @bp.route('/rent/<int:book_id>', methods=('POST', ))
 def rent(book_id):
     book_info = lib_books.query.filter_by(book_id=book_id).first()
+    status_info = lib_books.query.filter_by(book_id=book_id).first()
+
 
     if(book_info.book_counts == 0):
         flash(f"[{book_info.book_name}] 은 모두 대여된 상태입니다.")
@@ -90,6 +85,15 @@ def rent(book_id):
         book_info.book_counts = book_info.book_counts - 1
         flash(f"[{book_info.book_name}] 이 대여 되었습니다.")
         
+    id = book_info.book_id
+    em = session['user_email']
+    nm = book_info.book_name 
+
+
+    with sql.connect('lib_rabbit.db') as con:
+        cur = con.cursor()
+        cur.execute('INSERT INTO lib_status(book_id, user_email, book_name) VALUES (?, ?, ?)', (id, em, nm))
+        con.commit()
 
     db.session.commit()
 

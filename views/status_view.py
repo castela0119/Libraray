@@ -2,21 +2,44 @@ from flask import Blueprint, render_template, request, url_for, session, redirec
 from models.models import *
 from werkzeug.security import check_password_hash, generate_password_hash
 
-bp = Blueprint('status', __name__, url_prefix="/status")
+bp = Blueprint('status', __name__, url_prefix="/rent")
 
-# 일단 가게 정보를 보여주는 페이지를 만들어야 한다.
-@bp.route('/<int:user_no>')
-def book_detail(user_no):
+@bp.route('/info/<int:user_email>')
+def home(user_email):
 
-    # lib_books 의 정보를 다 가져와야 함
-    # reveiw 의 정보도 다 가져와야 함 (review 테이블을 따로 만들어야 할지 고민해 볼 것)
-
-    status_info     = lib_books.query.filter_by(user_no=user_no).first()
-
-    # 만약 book_info 에 없는 책을 주소창에 입력했을 경우
+    book_list       = lib_books.query.filter_by(book_id=user_email).first()
+    review_info     = lib_reviews.query.filter_by(user_email=user_email).first()
+    status_info     = lib_status.query.filter_by(user_email=user_email).first()
 
     if not status_info:
-        flash("잘못된 접근입니다.")
+        flash("대여한 책이 없습니다.")
         return redirect(url_for('main.home'))
+    else:
+        db.session.add(status_info)
+        db.session.commit()
+        return render_template('info.html', book_list=book_list, status_info=status_info, review_info=review_info)
 
-    return render_template("book_detail.html", status_info=status_info)
+# @bp.route('/<int:book_id>', methods=('GET', 'POST'))
+# def rent(book_id):
+
+#     user_info       = lib_users.query.filter_by(user_no=book_id).first()
+
+#     book_list       = lib_books.query.filter_by(book_id=book_id).first()
+    
+#     review_info     = lib_reviews.query.filter_by(book_id=book_id).first()
+    
+#     status_info     = lib_status.query.filter_by(book_id=book_id).first()
+
+#     # 만약 book_info 에 없는 책을 주소창에 입력했을 경우
+
+#     if not status_info:
+#         flash("대여한 책이 없습니다.")
+#         return redirect(url_for('main.home'))
+#     else:
+#         db.session.add(status_info)
+#         db.session.commit()
+#         return render_template('info.html', book_list=book_list, status_info=status_info, review_info=review_info)
+
+
+def _return(book_id):
+    pass

@@ -1,4 +1,6 @@
+from sqlalchemy.orm import defaultload
 from app import db
+from datetime import *
 
 '''
 model.py
@@ -32,8 +34,18 @@ class lib_status(db.Model):
     book_id             = db.Column(db.Integer, db.ForeignKey('lib_books.book_id'), nullable=False,)
     user_email          = db.Column(db.String(40), db.ForeignKey('lib_users.user_email'), nullable=False,)
     book_name           = db.Column(db.String(30), db.ForeignKey('lib_books.book_name'), nullable=False,)
-    book_start          = db.Column(db.Integer,)
-    book_end            = db.Column(db.Integer,)
+    book_start          = db.Column(db.Date, default = date.today)
+    book_end            = db.Column(db.Date, default = date.today() + timedelta(days=14))
+    book_return         = db.Column(db.Date)
+
+    def __init__(self, status_no, book_id, user_email, book_name, book_start, book_end, book_return):
+        self.status_no      = status_no
+        self.book_id        = book_id
+        self.user_email     = user_email
+        self.book_name      = book_name
+        self.book_start     = book_start
+        self.book_end       = book_end
+        self.book_return    = book_return
 
 class lib_users(db.Model):
 
