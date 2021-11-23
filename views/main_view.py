@@ -75,24 +75,37 @@ def logout():
 @bp.route('/rent/<int:book_id>', methods=('POST', ))
 def rent(book_id):
     book_info = lib_books.query.filter_by(book_id=book_id).first()
-    status_info = lib_books.query.filter_by(book_id=book_id).first()
+    review_info = lib_reviews.query.filter_by(book_id=book_id).first()
 
+    if 'user_email' not in session:
+        flash('권한이 없습니다. 로그인 해주세요.')
+        return redirect(url_for('main.home'))
 
-    if(book_info.book_counts == 0):
-        flash(f"[{book_info.book_name}] 은 모두 대여된 상태입니다.")
+    else:
+        if(book_info.book_counts == 0):
+            flash(f"[{book_info.book_name}] 은 모두 대여된 상태입니다.")
         
-    if(book_info.book_counts > 0):
-        book_info.book_counts = book_info.book_counts - 1
-        flash(f"[{book_info.book_name}] 이 대여 되었습니다.")
-        
-    id = book_info.book_id
-    em = session['user_email']
-    nm = book_info.book_name 
+        if(book_info.book_counts > 0):
+            book_info.book_counts = book_info.book_counts - 1
+            flash(f"[{book_info.book_name}] 이 대여 되었습니다.")
 
+        id = book_info.book_id
+        em = session['user_email']
+        pc = book_info.img_path
+        nm = book_info.book_name
+
+        rating_sum, average = 0, 0
+
+        if review_info:
+            for review in review_info:
+                rating_sum += review.rating
+            average = rating_sum / len(review_info)
+
+        avg = average
 
     with sql.connect('lib_rabbit.db') as con:
         cur = con.cursor()
-        cur.execute('INSERT INTO lib_status(book_id, user_email, book_name) VALUES (?, ?, ?)', (id, em, nm))
+        cur.execute('INSERT INTO lib_status(book_id, user_email, img_path, book_name, avg) VALUES (?, ?, ?, ?, ?)', (id, em, pc, nm, avg))
         con.commit()
 
     db.session.commit()
@@ -114,3 +127,20 @@ def rent(book_id):
 
 #     flash("대여가 완료되었습니다.")
 #     return redirect(url_for('main.home'), book_counts=book_counts)
+
+
+@bp.route('/info/<user_email>')
+def rent_info(user_email):
+
+    # book_list       = lib_books.query.order_by(lib_books.book_id.asc())
+    # review_info     = lib_reviews.query.filter_by(book_id=book_id).first()
+    status_info     = lib_status.query.filter_by(user_email=user_email).first()
+    
+    # db.session.query(lib_status, lib_books).filter(lib_status.user_email==user_email)
+    
+    if not status_info:
+        flash("대여한 책이 없습니다.")
+        return redirect(url_for('main.home'))
+    else:
+        
+        return redirect(url_for('info.html'), status_info=status_info)
