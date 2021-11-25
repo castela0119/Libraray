@@ -131,8 +131,6 @@ def rent_info():
     status_info = db.session.query(lib_books, lib_status).join(
         lib_books, lib_books.book_id == lib_status.book_id
         ).filter(lib_status.user_email == user_email).all()
-    
-    print(status_info)
 
     now_info = lib_status.query.filter_by(user_email=user_email, now = 1).first()
 
@@ -179,3 +177,27 @@ def outbook(book_id):
     db.session.commit()
 
     return redirect(url_for('main.rent_info'))
+
+@bp.route('/history')
+def history():
+    user_email = session['user_email']
+
+    status_info = db.session.query(lib_books, lib_status).join(
+        lib_books, lib_books.book_id == lib_status.book_id
+        ).filter(lib_status.user_email == user_email).all()
+
+    def get_score(book_id):
+        items = db.session.query(lib_reviews).filter(lib_reviews.book_id == book_id).all()
+        count = len(items)
+
+        rating_sum = 0
+        average = 0
+
+        if items:
+            for review in items:
+                rating_sum += review.rating
+            average = rating_sum / count
+
+        return average
+
+    return render_template('history.html', status_info=status_info, get_score=get_score)
