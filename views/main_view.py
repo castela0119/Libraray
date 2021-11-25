@@ -77,18 +77,15 @@ def logout():
 @bp.route('/rent/<int:book_id>', methods=('POST', ))
 def rent(book_id):
 
-    user_email = session['user_email']
-    book_info = lib_books.query.filter_by(book_id=book_id).first()
-
-    status_info = lib_status.query.filter_by(book_id=book_id, user_email=user_email, now = 1).first()
-
-    review_info = lib_reviews.query.filter_by(book_id=book_id).all()
-
     if 'user_email' not in session:
         flash('권한이 없습니다. 로그인 해주세요.')
         return redirect(url_for('main.home'))
 
     else:
+        user_email = session['user_email']
+        status_info = lib_status.query.filter_by(book_id=book_id, user_email=user_email, now = 1).first()
+        book_info = lib_books.query.filter_by(book_id=book_id).first()
+
         if(book_info.book_counts == 0):
             flash(f"[{book_info.book_name}] 은 모두 대여된 상태입니다.")
 
