@@ -7,6 +7,7 @@ bp = Blueprint('main', __name__, url_prefix='/')
 
 @bp.route('/')
 def home():
+    
     book_list = lib_books.query.order_by(lib_books.book_id.asc())
     status_info = lib_status.query.filter_by(book_id=lib_status.book_id).first()
 
@@ -75,7 +76,10 @@ def logout():
 @bp.route('/rent/<int:book_id>', methods=('POST', ))
 def rent(book_id):
     book_info = lib_books.query.filter_by(book_id=book_id).first()
-    review_info = lib_reviews.query.filter_by(book_id=book_id).first()
+
+    status_info = lib_status.query.filter_by(book_id=book_id).first()
+
+    review_info = lib_reviews.query.filter_by(book_id=book_id).all()
 
     if 'user_email' not in session:
         flash('권한이 없습니다. 로그인 해주세요.')
@@ -85,62 +89,82 @@ def rent(book_id):
         if(book_info.book_counts == 0):
             flash(f"[{book_info.book_name}] 은 모두 대여된 상태입니다.")
         
-        if(book_info.book_counts > 0):
-            book_info.book_counts = book_info.book_counts - 1
-            flash(f"[{book_info.book_name}] 이 대여 되었습니다.")
+        if(status_info is not None and status_info.now == 1):
+            flash(f"[{book_info.book_name}] 은 이미 대여된 상태입니다.")
 
-        id = book_info.book_id
-        em = session['user_email']
-        pc = book_info.img_path
-        nm = book_info.book_name
+        else:
+            if(book_info.book_counts > 0):
+                book_info.book_counts = book_info.book_counts - 1
+                id = book_info.book_id
+                em = session['user_email']
+                status = lib_status(id, em)
+                db.session.add(status)
+                db.session.commit()
+                flash(f"[{book_info.book_name}] 이 대여 되었습니다.")
 
-        rating_sum, average = 0, 0
+        
 
-        if review_info:
-            for review in review_info:
-                rating_sum += review.rating
-            average = rating_sum / len(review_info)
+        # rating_sum, average = 0, 0
 
-        avg = average
+        # if review_info:
+        #     for review in review_info:
+        #         rating_sum += review.rating
+        #     average = rating_sum / len(review_info)
 
-    with sql.connect('lib_rabbit.db') as con:
-        cur = con.cursor()
-        cur.execute('INSERT INTO lib_status(book_id, user_email, img_path, book_name, avg) VALUES (?, ?, ?, ?, ?)', (id, em, pc, nm, avg))
-        con.commit()
+        # avg = average
 
-    db.session.commit()
-
+    # with sql.connect('lib_rabbit.db') as con:
+    #     cur = con.cursor()
+    #     cur.execute('INSERT INTO lib_status(book_id,  book_name, now) VALUES (?, ?, ?, ?, ?, ?)', (id, em, pc, nm, avg, nw))
+    #     con.commit()
     
     return redirect(url_for('main.home'),)
 
+@bp.route('/info', methods=('GET', 'POST'))
+def rent_info():
+    
+    user_email = session['user_email']
 
-# @bp.route('/rent/<int:book_id>', methods=('POST', ))
-# def rent(book_id):
-#     book_info = lib_books.query.filter_by(book_id=book_id).first()
-
-#     if(book_info.book_counts > 0):
-#         book_counts = book_info.book_counts - 1
-#         book = lib_books(book_counts=book_counts)
-
-#     db.session.add(book)
-#     db.session.commit()
-
-#     flash("대여가 완료되었습니다.")
-#     return redirect(url_for('main.home'), book_counts=book_counts)
-
-
-@bp.route('/info/<user_email>')
-def rent_info(user_email):
-
+    status_info = db.session.query(lib_books, lib_status).join(
+        lib_books, lib_books.book_id == lib_status.book_id
+        ).filter(lib_status.user_email == user_email).all()
+    
     # book_list       = lib_books.query.order_by(lib_books.book_id.asc())
     # review_info     = lib_reviews.query.filter_by(book_id=book_id).first()
-    status_info     = lib_status.query.filter_by(user_email=user_email).first()
-    
     # db.session.query(lib_status, lib_books).filter(lib_status.user_email==user_email)
+
+    def get_score(book_id):
+        items = db.session.query(lib_reviews).filter(lib_reviews.book_id == book_id).all()
+        count = len(items)
+
+        rating_sum = 0
+        average = 0
+
+        if items:
+            for review in items:
+                rating_sum += review.rating
+            average = rating_sum / count
+
+        return average
     
     if not status_info:
         flash("대여한 책이 없습니다.")
         return redirect(url_for('main.home'))
     else:
-        
-        return redirect(url_for('info.html'), status_info=status_info)
+        return render_template('info.html', get_score=get_score ,status_info=status_info)
+
+
+@bp.route('/outbook/<int:book_id>', methods=['POST'])
+def outbook(book_id):
+    if request.method == 'POST': 
+        book_info = lib_books.query.filter_by(book_id=book_id).first()
+        status_info = lib_status.query.filter_by(book_id=book_id).first()
+
+        if(book_info.book_counts > 0):
+                book_info.book_counts = book_info.book_counts + 1
+                status_info.now = status_info.now - 1
+                flash(f"[{book_info.book_name}] 이 반납 되었습니다.")
+    
+    db.session.commit()
+
+    return redirect(url_for('main.home'))

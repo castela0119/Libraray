@@ -21,14 +21,23 @@ def book_detail(book_id):
         flash("잘못된 접근입니다.")
         return redirect(url_for('main.home'))
 
-    rating_sum, average = 0, 0
+    
 
-    if review_info:
-        for review in review_info:
-            rating_sum += review.rating
-        average = rating_sum / len(review_info)
+    def get_score(book_id):
+        items = db.session.query(lib_reviews).filter(lib_reviews.book_id == book_id).all()
+        count = len(items)
 
-    return render_template("book_detail.html", avg=average, book_info=book_info, review_info=review_info, status_info=status_info)
+        rating_sum = 0
+        average = 0
+
+        if items:
+            for review in items:
+                rating_sum += review.rating
+            average = rating_sum / count
+
+        return average
+
+    return render_template("book_detail.html", get_score=get_score, book_info=book_info, review_info=review_info, status_info=status_info)
 
 # 리뷰를 써야하니깐, 리뷰를 작성할 수 있는 POST 를 받는 것을 만들어야 함.
 @bp.route('/write_review/<int:book_id>', methods=('POST', ))

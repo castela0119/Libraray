@@ -19,37 +19,35 @@ class lib_books(db.Model):
     author              = db.Column(db.String(30),)
     publication_date    = db.Column(db.Integer,)
     pages               = db.Column(db.Integer,)
-    isbn                = db.Column(db.Integer, nullable=False)
+    isbn                = db.Column(db.String(255), nullable=False)
     description         = db.Column(db.String(255),)
+    origin_url         = db.Column(db.String(255),)
     img_path            = db.Column(db.String(255),)
-    book_counts         = db.Column(db.Integer,)
-    book_stars          = db.Column(db.Integer,)
-    book_reviews        = db.Column(db.String(255),)
+    book_counts         = db.Column(db.Integer, default=0)
+    book_stars          = db.Column(db.Integer, default=0) 
+    book_reviews = db.relationship('lib_reviews', backref="book")
 
 class lib_status(db.Model):
 
     __tablename__ = 'lib_status'
 
     status_no           = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True,)
-    img_path            = db.Column(db.String(255), db.ForeignKey('lib_books.img_path'))
+    
     book_id             = db.Column(db.Integer, db.ForeignKey('lib_books.book_id'), nullable=False,)
-    user_email          = db.Column(db.String(40), db.ForeignKey('lib_users.user_email'), nullable=False,)
-    book_name           = db.Column(db.String(30), db.ForeignKey('lib_books.book_name'), nullable=False,)
-    avg              = db.Column(db.Float, nullable=False)
-    book_start          = db.Column(db.Date, default = date.today)
+    user_email          = db.Column(db.String(255), db.ForeignKey('lib_users.user_email'), nullable=False,)
+    
+    book_start          = db.Column(db.Date, default = date.today())
     book_end            = db.Column(db.Date, default = date.today() + timedelta(days=14))
     book_return         = db.Column(db.Date)
+    now                 = db.Column(db.Integer, default = 1)
 
-    def __init__(self, status_no, book_id, user_email, img_path, book_name, avg, book_start, book_end, book_return):
-        self.status_no      = status_no
+    def __init__(self, book_id, user_email, book_return=None, now=1, book_start=None, book_end=None):
         self.book_id        = book_id
         self.user_email     = user_email
-        self.img_path       = img_path
-        self.book_name      = book_name
-        self.avg            = avg
         self.book_start     = book_start
         self.book_end       = book_end
         self.book_return    = book_return
+        self.now            = now
 
 class lib_users(db.Model):
 
@@ -69,3 +67,4 @@ class lib_reviews(db.Model):
     book_id             = db.Column(db.Integer, db.ForeignKey('lib_books.book_id'), nullable=False)
     rating              = db.Column(db.Float, nullable=False)
     content             = db.Column(db.Text())
+

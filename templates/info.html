@@ -9,25 +9,30 @@
     <div class="container">
         <div class="row row-cols-1 row-cols-xs-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">  
             <ul class="list-group">
-                {% for book in status_info %}
+                {% for status in status_info %}
                     <div class="card" style="width: 18rem;">
-                        <img src="{{ url_for('static', filename = book.img_path) }}" class="card-img-top" alt="책 이미지">
+                        <img src="{{ url_for('static', filename = status.lib_books.img_path) }}" class="card-img-top" alt="책 이미지">
                         <div class="card-body">
-                            <h5 class="card-title">{{ book.book_name }} title</h5>
-                            <li class="list-group-item list-group-item-action">{{ book.avg }}</li>
-                            <li class="list-group-item list-group-item-action">{{ book.book_stars }}</li>
+                            <h5 class="card-title">{{ status.lib_books.book_name }} </h5>
+                            <li class="list-group-item list-group-item-action"> 평점 : {{ get_score(status.lib_books.book_id) }}</li>
+                            <li class="list-group-item list-group-item-action"> 대여 시작일 :{{ status.lib_status.book_start }}</li>
+                            <form action="{{ url_for('main.outbook', book_id=status.lib_books.book_id) }}" method="post">
+                                <div class="form-group">
+                                    <input class="btn btn-primary" type="submit" value="반납하기">
+                                </div>
+                            </form>
                         </div>
                     </div>
                 {% endfor %}
                 
-                {% for status in status_info %}
+                <!-- {% for status in status_info %}
                     <li class="list-group-item list-group-item-action">{{ status.book_start }}</li>
-                    <form action="{{ url_for('status._return', book_id=book.book_id) }}" method="post">
+                    <form action="{{ url_for('status._return', book_id=status.book_id) }}" method="post">
                         <div class="form-group">
                             <input class="btn btn-primary" type="submit" value="반납하기">
                         </div>
                     </form>
-                {% endfor %}
+                {% endfor %} -->
             </ul>                
         </div>
     </div>

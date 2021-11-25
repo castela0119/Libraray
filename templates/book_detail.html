@@ -53,7 +53,7 @@
         </table>
         <hr/>
         <h3>리뷰</h3>
-        <h5>현재 {{ review_info|length }} 개의 리뷰가 있습니다.(평균: {{ avg }})</h5>
+        <h5>현재 {{ review_info|length }} 개의 리뷰가 있습니다.(평균: {{ get_score(book_info.book_id) }})</h5>
         {% for review in review_info %}
             <div>
                 <!-- 리뷰가 3.0점 이상이라면 파란색을, 아니라면 빨간색을 표시함.-->

@@ -41,6 +41,6 @@ def home(book_id):
 #         db.session.commit()
 #         return render_template('info.html', book_list=book_list, status_info=status_info, review_info=review_info)
 
-
-def _return(book_id):
+@bp.route('/info/1')
+def _return():
     pass
