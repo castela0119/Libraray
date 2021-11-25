@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, session, redirect, flash
 from models.models import *
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import date
 import sqlite3 as sql
 
 bp = Blueprint('main', __name__, url_prefix='/')
@@ -75,9 +76,11 @@ def logout():
 
 @bp.route('/rent/<int:book_id>', methods=('POST', ))
 def rent(book_id):
+
+    user_email = session['user_email']
     book_info = lib_books.query.filter_by(book_id=book_id).first()
 
-    status_info = lib_status.query.filter_by(book_id=book_id).first()
+    status_info = lib_status.query.filter_by(book_id=book_id, user_email=user_email, now = 1).first()
 
     review_info = lib_reviews.query.filter_by(book_id=book_id).all()
 
@@ -88,8 +91,8 @@ def rent(book_id):
     else:
         if(book_info.book_counts == 0):
             flash(f"[{book_info.book_name}] 은 모두 대여된 상태입니다.")
-        
-        if(status_info is not None and status_info.now == 1):
+
+        elif(status_info is not None):
             flash(f"[{book_info.book_name}] 은 이미 대여된 상태입니다.")
 
         else:
@@ -129,6 +132,13 @@ def rent_info():
         lib_books, lib_books.book_id == lib_status.book_id
         ).filter(lib_status.user_email == user_email).all()
     
+    print(status_info)
+
+    now_info = lib_status.query.filter_by(user_email=user_email, now = 1).first()
+
+    # isOne = status_info.query.filter_by(now = 1).all()
+    # print(isOne)
+
     # book_list       = lib_books.query.order_by(lib_books.book_id.asc())
     # review_info     = lib_reviews.query.filter_by(book_id=book_id).first()
     # db.session.query(lib_status, lib_books).filter(lib_status.user_email==user_email)
@@ -151,20 +161,21 @@ def rent_info():
         flash("대여한 책이 없습니다.")
         return redirect(url_for('main.home'))
     else:
-        return render_template('info.html', get_score=get_score ,status_info=status_info)
+        return render_template('info.html', get_score=get_score ,status_info=status_info, now_info=now_info)
 
 
 @bp.route('/outbook/<int:book_id>', methods=['POST'])
 def outbook(book_id):
     if request.method == 'POST': 
         book_info = lib_books.query.filter_by(book_id=book_id).first()
-        status_info = lib_status.query.filter_by(book_id=book_id).first()
+        status_info = lib_status.query.filter_by(book_id=book_id, now = 1).first()
 
         if(book_info.book_counts > 0):
                 book_info.book_counts = book_info.book_counts + 1
                 status_info.now = status_info.now - 1
+                status_info.book_return = date.today()
                 flash(f"[{book_info.book_name}] 이 반납 되었습니다.")
-    
+
     db.session.commit()
 
-    return redirect(url_for('main.home'))
+    return redirect(url_for('main.rent_info'))
