@@ -26,6 +26,11 @@
         margin-bottom: 25px;
     }
 
+    .card-title {
+        font-size: 16px;
+    }
+
+
 </style>
 {% endblock %}
 
@@ -41,7 +46,6 @@
                             <img src="{{ url_for('static', filename = book.img_path) }}" class="card-img-top" alt="책 이미지">
                             <div class="card-body">
                                 <h5 class="card-title">{{ book.book_name }} </h5>
-                                <div class="list-group-item list-group-item-action">{{ book.book_stars }}</div>
                                 <div class="list-group-item list-group-item-action">{{ book.book_counts }} 권 / 5 권</div>
                                 <form action="{{ url_for('main.rent', book_id=book.book_id) }}" method="post">
                                     <div class="form-group">
