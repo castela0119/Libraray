@@ -1,8 +1,46 @@
 {% extends "base.html" %}
 
+{% block css %}
+<style>
+    .card {
+      width: 50%;
+      height: 50%;
+    }
+
+    .table th {
+      width: 10px;
+      padding: 20px;
+      margin: 10px;
+    }
+    /* .book-card {
+        margin-bottom: 20px;
+    } 
+    img {
+        height: 340px;
+    }
+    
+    .card-title {
+        height: 50px;
+    }
+
+    .form-group {
+        margin-top: 15px;
+    }
+
+    .col-md-3 {
+        margin-bottom: 25px;
+    }
+
+    .card-title {
+        font-size: 18px;
+    } */
+</style>
+{% endblock %}
+
 {% block page_content %}
     {% if book_info %}
-        <table class="table table-hover table-condensed table-bordered">
+      <div class="card">
+        <table class="table">
             <tbody>
                 <tr>
                     <img src="{{ url_for('static', filename = book_info.img_path) }}" class="card-img-top" alt="책 이미지">
@@ -51,6 +89,7 @@
                 </tr>
             </tbody>
         </table>
+      </div>
         <hr/>
         <h3>리뷰</h3>
         <h5>현재 {{ review_info|length }} 개의 리뷰가 있습니다.(평균: {{ get_score(book_info.book_id) }})</h5>

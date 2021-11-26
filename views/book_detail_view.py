@@ -59,7 +59,7 @@ def create_review(book_id):
     db.session.add(review)
     db.session.commit()
 
-    flash('와! 리뷰! 아시는구나!')
+    flash('리뷰가 작성되었습니다.')
     return redirect(url_for('book_detail.book_detail', book_id=book_id))
 
 # 리뷰를 삭제할 수도 있음 -> 삭제 요청을 받는 걸 만들어야 함.
