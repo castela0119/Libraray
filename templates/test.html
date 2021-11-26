@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row row-cols-1 row-cols-xs-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3"></div>
+    <div class="list-group">
+    {% for book in book_list %}
+        <div class="book-card">
+            <a href="/book/{{ book.book_id }}">
+                <div class="card">
+                    <img src="{{ url_for('static', filename = book.img_path) }}" class="card-img-top" alt="책 이미지">
+                </div>
+                <div class="card" style="width: 18rem;">
+                <h5 class="book-name">
+                        {{ book.book_name }}
+                </h5>
+                <p class="rating"></p>
+                <p class="stock">{{book.book_counts}}권 남음</p>
+            </a>
+            <form action="{{ url_for('main.rent', book_id=book.book_id) }}" method="post">
+                <div class="form-group">
+                    <input class="btn btn-primary" type="submit" value="대여하기">
+                </div>
+            </form>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    </div>
+</div>
+<div id="pagenation">
+    {% if page > 0 %}
+    <a href="{{ url_for('main.home', page=page-1) }}" id="left-btn" class="btn btn-warning">◀</a>
+    {% endif %}
+    <p id="this-page" style="display: inline; padding: 5px;"><b>{{page+1}}</b></p>
+    {% if page|int() != last_page|int() %}
+    <a href="{{ url_for('main.home', page=page+1) }}" id="right-btn" class="btn btn-warning">▶</a>
+    {% endif %}
+</div>
+{% endblock %}

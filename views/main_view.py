@@ -9,10 +9,20 @@ bp = Blueprint('main', __name__, url_prefix='/')
 @bp.route('/')
 def home():
     
-    book_list = lib_books.query.order_by(lib_books.book_id.asc())
     status_info = lib_status.query.filter_by(book_id=lib_status.book_id).first()
 
-    return render_template('main.html', book_list=book_list, status_info=status_info)
+    page = request.args.get('page', type=int, default=1)  # 페이지
+
+    page_list = lib_books.query.order_by(lib_books.book_id.asc())
+    page_list = page_list.paginate(page, per_page=8)
+
+    print(page_list)
+
+    print(page_list.items)
+
+    print(page_list.per_page)
+
+    return render_template('main.html', status_info=status_info, page_list=page_list)
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
