@@ -2,33 +2,57 @@
 
 {% block title %}메인 페이지{% endblock %}
 
+{% block css %}
+<style>
+    .container {
+        width: 200%;
+    }
+    .book-card {
+        margin-bottom: 20px;
+    } 
+    img {
+        height: 340px;
+    }
+    
+    .card-title {
+        height: 50px;
+    }
+
+    .form-group {
+        margin-top: 15px;
+    }
+
+    .col-md-3 {
+        margin-bottom: 25px;
+    }
+
+</style>
+{% endblock %}
+
+
 {% block page_content %}    
     {% if page_list %}
-    
     <div class="container">
-        <div class="row row-cols-1 row-cols-xs-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">  
-            <ul class="list-group">
-                {% for book in page_list.items%}
-                    <div class="book-card">
-                        <a href="/book/{{ book.book_id }}">
-                            <div class="card" style="width: 18rem;">
-                                <img src="{{ url_for('static', filename = book.img_path) }}" class="card-img-top" alt="책 이미지">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ book.book_name }} </h5>
-                                    <li class="list-group-item list-group-item-action">{{ book.book_stars }}</li>
-                                    <li class="list-group-item list-group-item-action">{{ book.book_counts }} 권 / 5 권</li>
-                                </div>
+        <div class="row">
+            {% for book in page_list.items%}
+                <div class="col-md-3">
+                    <a href="/book/{{ book.book_id }}">
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{ url_for('static', filename = book.img_path) }}" class="card-img-top" alt="책 이미지">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ book.book_name }} </h5>
+                                <div class="list-group-item list-group-item-action">{{ book.book_stars }}</div>
+                                <div class="list-group-item list-group-item-action">{{ book.book_counts }} 권 / 5 권</div>
+                                <form action="{{ url_for('main.rent', book_id=book.book_id) }}" method="post">
+                                    <div class="form-group">
+                                        <input class="btn btn-primary" type="submit" value="대여하기">
+                                    </div>
+                                </form>
                             </div>
-                        </a>
-                    </div>
-                    
-                    <form action="{{ url_for('main.rent', book_id=book.book_id) }}" method="post">
-                        <div class="form-group">
-                            <input class="btn btn-primary" type="submit" value="대여하기">
                         </div>
-                    </form>
-                {% endfor %}        
-            </ul>                
+                    </a>
+                </div>
+            {% endfor %}                      
         </div>
     </div>
     
