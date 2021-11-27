@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
     <head>
+        <link href="//font.elice.io/EliceDigitalBaeum.css" rel="stylesheet">
         <meta charset="utf-8" />
         <meta
             name="viewport"
@@ -29,7 +30,14 @@
         <!-- 각 html 페이지 타이틀  -->
         <title>{% block title %}{% endblock %}</title>
         {% block css %}
+            
         {% endblock %}
+        <style>
+            @import url(//font.elice.io/EliceDigitalBaeum.css);
+            html, body {
+                font-family: "Elice Digital Baeum",sans-serif;
+              }
+        </style>
     </head>
     <body>
         <!-- 부트스트랩 내비게이션 포함 -->

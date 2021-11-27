@@ -34,6 +34,7 @@ def book_detail(book_id):
             for review in items:
                 rating_sum += review.rating
             average = rating_sum / count
+            average = round(average, 1)
 
         return average
 

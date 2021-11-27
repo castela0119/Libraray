@@ -16,12 +16,6 @@ def home():
     page_list = lib_books.query.order_by(lib_books.book_id.asc())
     page_list = page_list.paginate(page, per_page=8)
 
-    print(page_list)
-
-    print(page_list.items)
-
-    print(page_list.per_page)
-
     return render_template('main.html', status_info=status_info, page_list=page_list)
 
 @bp.route('/register', methods=('GET', 'POST'))
@@ -33,6 +27,7 @@ def register():
         # 회원가입 과정을 거쳐야겠다!
         # 만약에 같은 아이디가 있으면 어떡해?
         user = lib_users.query.filter_by(user_email=request.form['user_email']).first()
+        
         if not user:
             user_pw = generate_password_hash(request.form['user_pw'])
 
@@ -74,10 +69,6 @@ def login():
             flash(f"{user_data.user_name}님, 환영합니다!")
             return redirect(url_for('main.home'))
             
-# @bp.route('/status')
-# def status():
-
-
 @bp.route('/logout')
 def logout():
     session.clear()
@@ -141,13 +132,6 @@ def rent_info():
 
     now_info = lib_status.query.filter_by(user_email=user_email, now = 1).first()
 
-    # isOne = status_info.query.filter_by(now = 1).all()
-    # print(isOne)
-
-    # book_list       = lib_books.query.order_by(lib_books.book_id.asc())
-    # review_info     = lib_reviews.query.filter_by(book_id=book_id).first()
-    # db.session.query(lib_status, lib_books).filter(lib_status.user_email==user_email)
-
     def get_score(book_id):
         items = db.session.query(lib_reviews).filter(lib_reviews.book_id == book_id).all()
         count = len(items)
@@ -159,6 +143,7 @@ def rent_info():
             for review in items:
                 rating_sum += review.rating
             average = rating_sum / count
+            average = round(average, 1)
 
         return average
     
@@ -204,6 +189,7 @@ def history():
             for review in items:
                 rating_sum += review.rating
             average = rating_sum / count
+            average = round(average, 1)
 
         return average
 
