@@ -12,6 +12,19 @@
       padding: 20px;
       margin: 10px;
     }
+    
+    .review1 {
+        margin-top:  15px;
+    }
+
+    .review2 {
+        margin-top:  15px;
+    }
+
+    .form-control {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
     /* .book-card {
         margin-bottom: 20px;
     } 
@@ -90,8 +103,7 @@
             </tbody>
         </table>
       </div>
-        <hr/>
-        <h3>리뷰</h3>
+        <h3 class="review1">리뷰</h3>
         <h5>현재 {{ review_info|length }} 개의 리뷰가 있습니다.(평균: {{ get_score(book_info.book_id) }})</h5>
         {% for review in review_info %}
             <div>
@@ -127,7 +139,7 @@
                     <option value="5">5점</option>
                 </select>
                 <div class="form-group">
-                    <label for="review">리뷰</label>
+                    <label for="review" class="review2">리뷰</label>
                     <input class="form-control" name="review" id="review" placeholder="리뷰를 작성해주세요."></input> 
                 </div>
                 <input class="btn btn-primary" type="submit" value="리뷰 올리기">

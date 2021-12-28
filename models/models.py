@@ -21,11 +21,11 @@ class lib_books(db.Model):
     pages               = db.Column(db.Integer,)
     isbn                = db.Column(db.String(255), nullable=False)
     description         = db.Column(db.String(255),)
-    origin_url         = db.Column(db.String(255),)
+    origin_url          = db.Column(db.String(255),)
     img_path            = db.Column(db.String(255),)
     book_counts         = db.Column(db.Integer, default=0)
     book_stars          = db.Column(db.Integer, default=0) 
-    book_reviews = db.relationship('lib_reviews', backref="book")
+    book_reviews        = db.relationship('lib_reviews', backref="book")
 
 class lib_status(db.Model):
 
