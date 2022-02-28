@@ -5,8 +5,7 @@
 - 도서 상세페이지로 이동이 가능하며 도서에 대한 리뷰 및 평점을 남길 수 있습니다.
 
 ## 가상환경 진입
-> source flask/bin/activate
-
+> source flask/bin/activate  
 
 ## 서버 실행
-> python app.py
+> python app.py  
