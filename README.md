@@ -6,6 +6,7 @@
 
 ## 가상환경 진입
 > source flask/bin/activate
-\n
+
+
 ## 서버 실행
 > python app.py
