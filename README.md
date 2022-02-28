@@ -6,6 +6,12 @@
 ---
 ## 가상환경 진입
 > source flask/bin/activate  
+
+## 패키지 다운로드
+> pip install -r requirements.txt
+
+## 가상환경 종료
+> deactivate
 ---
 ## 서버 실행
 > python app.py  
